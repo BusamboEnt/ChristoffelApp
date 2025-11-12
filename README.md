@@ -7,6 +7,7 @@ A comprehensive React Native mobile application for restaurant menu management a
 - **Student Number**: [ST10497531]
 - **Course**: Portfolio of Evidence - Publishing and Last Features
 - **GitHub Repository**: [(https://github.com/BusamboEnt/ChristoffelApp)]
+- **Video Demonstration**: [https://youtube.com/shorts/own2r3nufy0]
 - **Submission**: Part 3 - Final Submission
 
 ## Project Overview
@@ -1791,7 +1792,7 @@ The development process followed industry best practices with regular commits, i
 ## Repository Information
 
 - **GitHub Repository**: [(https://github.com/BusamboEnt/ChristoffelApp)]
-- **Video Demonstration**: [Your Video URL]
+- **Video Demonstration**: [https://youtube.com/shorts/own2r3nufy0]
 - **Submission Date**: November 12, 2025
 
 ## Declaration
