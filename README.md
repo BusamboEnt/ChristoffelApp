@@ -7,7 +7,7 @@ A comprehensive React Native mobile application for restaurant menu management a
 - **Student Number**: [ST10497531]
 - **Course**: Portfolio of Evidence - Publishing and Last Features
 - **GitHub Repository**: [(https://github.com/BusamboEnt/ChristoffelApp)]
-- **Video Demonstration**: [https://youtube.com/shorts/own2r3nufy0]
+- **Video Demonstration**: [https://vt.tiktok.com/ZSytTnKwQ/]
 - **Submission**: Part 3 - Final Submission
 
 ## Project Overview
@@ -709,9 +709,9 @@ ChristoffelApp/
 │   └── useCustomAlert.tsx           # Alert state management hook (40 lines)
 └── assets/
     ├── dish1.png                    # Placeholder dish images
-    ├── welcome1.png                 # Welcome screen images
-    ├── welcome2.png
-    └── welcome3.png
+    ├── 1.svg                 # Welcome screen images
+    ├── 2.svg
+    └── 3.svg
 ```
 
 **Total Project Statistics:**
@@ -1559,21 +1559,21 @@ npm install
 
 ### Phase 1: Backend Integration (Priority: High)
 
-**1. API Development**
+**1. API Development** To be added...
 - RESTful API for menu management
 - Order processing endpoints
 - User profile synchronization
 - Real-time table status updates
 - Admin dashboard for management
 
-**2. Database Implementation**
+**2. Database Implementation** To be added...
 - PostgreSQL or MongoDB for data storage
 - Menu items database
 - User accounts and profiles
 - Order history persistence
 - Table management system
 
-**3. Data Persistence**
+**3. Data Persistence** To be added...
 - AsyncStorage for local caching
 - Offline data synchronization
 - State persistence between sessions
@@ -1581,21 +1581,21 @@ npm install
 
 ### Phase 2: User Features (Priority: High)
 
-**4. Authentication System**
+**4. Authentication System** To be added...
 - User registration and login
 - Email verification
 - Password reset functionality
 - Social media login (Google, Facebook)
 - Secure token-based authentication
 
-**5. User Accounts**
+**5. User Accounts** To be added... Partially done 
 - Personal profile with avatar
 - Order history per user
 - Saved payment methods
 - Favorite dishes list
 - Custom dietary preferences per user
 
-**6. Enhanced Profile**
+**6. Enhanced Profile** To be added...
 - Profile photo upload
 - Address management
 - Multiple delivery addresses
@@ -1604,14 +1604,14 @@ npm install
 
 ### Phase 3: Payment Integration (Priority: High)
 
-**7. Payment Gateway**
+**7. Payment Gateway** To be added...
 - Integration with Yoco (South African provider)
 - Credit/debit card processing
 - EFT payments
 - SnapScan integration
 - Payment history and receipts
 
-**8. Order Management**
+**8. Order Management** To be added... Partially done.
 - Real-time order tracking
 - Kitchen notification system
 - Estimated preparation time
@@ -1620,28 +1620,28 @@ npm install
 
 ### Phase 4: Enhanced Functionality (Priority: Medium)
 
-**9. Push Notifications**
+**9. Push Notifications** To be added...
 - Order status updates
 - Table ready notifications
 - Special offers and promotions
 - Birthday rewards
 - Order delay alerts
 
-**10. Reservation System**
+**10. Reservation System** To be added... Partially done. 
 - Table booking in advance
 - Time slot selection
 - Party size management
 - Special occasion notes
 - Cancellation and modification
 
-**11. Reviews and Ratings**
+**11. Reviews and Ratings** To be added...
 - Dish reviews and ratings
 - Photo uploads with reviews
 - Chef responses to reviews
 - Verified order reviews only
 - Review moderation system
 
-**12. Chef's Recommendations**
+**12. Chef's Recommendations** To be added...
 - Daily specials
 - Seasonal menu items
 - Pairing suggestions
@@ -1650,14 +1650,14 @@ npm install
 
 ### Phase 5: Advanced Features (Priority: Medium)
 
-**13. Loyalty Program**
+**13. Loyalty Program** To be added...
 - Points system for orders
 - Reward tiers (Bronze, Silver, Gold)
 - Exclusive member offers
 - Birthday bonuses
 - Referral rewards
 
-**14. Social Features**
+**14. Social Features** To be added...
 - Share dishes on social media
 - Tag dining companions
 - Restaurant check-ins
