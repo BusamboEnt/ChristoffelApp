@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -20,6 +20,7 @@ interface MenuItem {
   price: number;
   image: any;
   category: string;
+  course: 'starter' | 'main' | 'dessert';
   dietary?: string[];
   allergens?: string[];
 }
@@ -27,49 +28,152 @@ interface MenuItem {
 const MenuScreen: React.FC = () => {
   const navigation = useNavigation();
   const { getTotalItems } = useCart();
+  const [selectedCourse, setSelectedCourse] = useState<'all' | 'starter' | 'main' | 'dessert'>('all');
   
   const menuItems: MenuItem[] = [
+    // STARTERS
     { 
-      id: '1', 
+      id: 's1', 
+      label: 'Crispy Calamari with Aioli', 
+      description: 'Tender calamari rings, lightly breaded and fried to perfection',
+      price: 145.00,
+      image: require('../assets/dish1.png'),
+      category: 'À la carte',
+      course: 'starter',
+      dietary: ['Dairy-free'],
+      allergens: ['Shellfish', 'Gluten']
+    },
+    { 
+      id: 's2', 
+      label: 'Caprese Salad', 
+      description: 'Fresh mozzarella, ripe tomatoes, and basil with balsamic glaze',
+      price: 125.00,
+      image: require('../assets/dish1.png'),
+      category: 'À la carte',
+      course: 'starter',
+      dietary: ['Vegetarian', 'Gluten-free'],
+      allergens: ['Dairy']
+    },
+    { 
+      id: 's3', 
+      label: 'Soup of the Day', 
+      description: 'Chef\'s specially prepared seasonal soup',
+      price: 95.00,
+      image: require('../assets/dish1.png'),
+      category: 'À la carte',
+      course: 'starter',
+      dietary: ['Vegetarian'],
+      allergens: ['Dairy']
+    },
+    { 
+      id: 's4', 
+      label: 'Prawn Cocktail', 
+      description: 'Succulent prawns served with cocktail sauce and lemon',
+      price: 165.00,
+      image: require('../assets/dish1.png'),
+      category: 'À la carte',
+      course: 'starter',
+      dietary: ['Gluten-free', 'Dairy-free'],
+      allergens: ['Shellfish']
+    },
+    
+    // MAINS
+    { 
+      id: 'm1', 
       label: 'Seared Scallops with Citrus-Shallot Salad', 
       description: 'Fresh sea scallops with vibrant citrus and shallots',
       price: 485.00,
       image: require('../assets/dish1.png'),
       category: 'À la carte',
+      course: 'main',
       dietary: ['Gluten-free', 'Dairy-free'],
       allergens: ['Shellfish']
     },
     { 
-      id: '2', 
+      id: 'm2', 
       label: 'Grilled Ribeye Steak', 
       description: 'Prime ribeye with herb butter and seasonal vegetables',
       price: 725.00,
       image: require('../assets/dish1.png'),
       category: 'À la carte',
+      course: 'main',
       dietary: ['Gluten-free'],
       allergens: ['Dairy']
     },
     { 
-      id: '3', 
+      id: 'm3', 
       label: 'Wild Mushroom Risotto', 
       description: 'Creamy arborio rice with truffle oil and parmesan',
       price: 395.00,
       image: require('../assets/dish1.png'),
       category: 'À la carte',
+      course: 'main',
       dietary: ['Vegetarian'],
       allergens: ['Dairy', 'Gluten']
     },
     { 
-      id: '4', 
+      id: 'm4', 
       label: 'Pan-Seared Salmon', 
       description: 'Atlantic salmon with lemon beurre blanc',
       price: 545.00,
       image: require('../assets/dish1.png'),
       category: 'À la carte',
+      course: 'main',
       dietary: ['Gluten-free'],
       allergens: ['Fish', 'Dairy']
     },
+    
+    // DESSERTS
+    { 
+      id: 'd1', 
+      label: 'Chocolate Lava Cake', 
+      description: 'Warm chocolate cake with molten center, served with vanilla ice cream',
+      price: 145.00,
+      image: require('../assets/dish1.png'),
+      category: 'À la carte',
+      course: 'dessert',
+      dietary: ['Vegetarian'],
+      allergens: ['Dairy', 'Gluten', 'Eggs']
+    },
+    { 
+      id: 'd2', 
+      label: 'Crème Brûlée', 
+      description: 'Classic French vanilla custard with caramelized sugar topping',
+      price: 125.00,
+      image: require('../assets/dish1.png'),
+      category: 'À la carte',
+      course: 'dessert',
+      dietary: ['Vegetarian', 'Gluten-free'],
+      allergens: ['Dairy', 'Eggs']
+    },
+    { 
+      id: 'd3', 
+      label: 'Tiramisu', 
+      description: 'Traditional Italian dessert with espresso-soaked ladyfingers',
+      price: 135.00,
+      image: require('../assets/dish1.png'),
+      category: 'À la carte',
+      course: 'dessert',
+      dietary: ['Vegetarian'],
+      allergens: ['Dairy', 'Gluten', 'Eggs']
+    },
+    { 
+      id: 'd4', 
+      label: 'Fresh Berry Sorbet', 
+      description: 'Light and refreshing mixed berry sorbet',
+      price: 95.00,
+      image: require('../assets/dish1.png'),
+      category: 'À la carte',
+      course: 'dessert',
+      dietary: ['Vegan', 'Gluten-free', 'Dairy-free'],
+      allergens: []
+    },
   ];
+
+  // Filter menu items based on selected course
+  const filteredMenuItems = selectedCourse === 'all' 
+    ? menuItems 
+    : menuItems.filter(item => item.course === selectedCourse);
 
   const renderItem = ({ item }: { item: MenuItem }) => (
     <TouchableOpacity 
@@ -86,11 +190,11 @@ const MenuScreen: React.FC = () => {
         <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
         <View style={styles.cardFooter}>
           <View style={styles.categoryBadge}>
-            <Text style={styles.categoryText}>{item.category}</Text>
+            <Text style={styles.categoryText}>{item.course.toUpperCase()}</Text>
           </View>
           {item.dietary && item.dietary.length > 0 && (
             <View style={styles.dietaryTags}>
-              {item.dietary.map((tag, index) => (
+              {item.dietary.slice(0, 2).map((tag, index) => (
                 <Text key={index} style={styles.dietaryTag}>🌿 {tag}</Text>
               ))}
             </View>
@@ -124,9 +228,48 @@ const MenuScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
+        {/* Course Filter Buttons */}
+        <View style={styles.filterContainer}>
+          <TouchableOpacity 
+            style={[styles.filterButton, selectedCourse === 'all' && styles.filterButtonActive]}
+            onPress={() => setSelectedCourse('all')}
+          >
+            <Text style={[styles.filterButtonText, selectedCourse === 'all' && styles.filterButtonTextActive]}>
+              All
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.filterButton, selectedCourse === 'starter' && styles.filterButtonActive]}
+            onPress={() => setSelectedCourse('starter')}
+          >
+            <Text style={[styles.filterButtonText, selectedCourse === 'starter' && styles.filterButtonTextActive]}>
+              Starters
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.filterButton, selectedCourse === 'main' && styles.filterButtonActive]}
+            onPress={() => setSelectedCourse('main')}
+          >
+            <Text style={[styles.filterButtonText, selectedCourse === 'main' && styles.filterButtonTextActive]}>
+              Mains
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.filterButton, selectedCourse === 'dessert' && styles.filterButtonActive]}
+            onPress={() => setSelectedCourse('dessert')}
+          >
+            <Text style={[styles.filterButtonText, selectedCourse === 'dessert' && styles.filterButtonTextActive]}>
+              Desserts
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Menu List */}
         <FlatList
-          data={menuItems}
+          data={filteredMenuItems}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
@@ -193,6 +336,34 @@ const styles = StyleSheet.create({
     marginTop: 5,
     letterSpacing: 2,
     textTransform: 'uppercase',
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    gap: 10,
+  },
+  filterButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    backgroundColor: '#111',
+    borderWidth: 1,
+    borderColor: '#333',
+    alignItems: 'center',
+  },
+  filterButtonActive: {
+    backgroundColor: '#FFF',
+    borderColor: '#FFF',
+  },
+  filterButtonText: {
+    color: '#AAA',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  filterButtonTextActive: {
+    color: '#000',
   },
   list: { 
     padding: 15,

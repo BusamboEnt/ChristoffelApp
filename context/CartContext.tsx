@@ -7,6 +7,7 @@ interface Dish {
   price: number;
   image: any;
   category: string;
+  course: 'starter' | 'main' | 'dessert';
   dietary?: string[];
   allergens?: string[];
 }
@@ -85,7 +86,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       id: Date.now().toString(),
       items: [...cart],
       tableNumber,
-      totalPrice: getTotalPrice() * 1.1, // Including tax
+      totalPrice: getTotalPrice() * 1.15, // Including 15% VAT
       date: new Date().toISOString(),
       status: 'pending',
     };
