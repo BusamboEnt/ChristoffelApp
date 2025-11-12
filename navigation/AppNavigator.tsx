@@ -6,6 +6,9 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import MenuScreen from '../screens/MenuScreen';
 import DishesScreen from '../screens/DishesScreen';
 import CartScreen from '../screens/CartScreen';
+import TableSelectionScreen from '../screens/TableSelectionScreen';
+import OrderHistoryScreen from '../screens/OrderHistoryScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -18,6 +21,9 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Menu" component={MenuScreen} />
         <Stack.Screen name="Dishes" component={DishesScreen} />
         <Stack.Screen name="Cart" component={CartScreen} />
+        <Stack.Screen name="TableSelection" component={TableSelectionScreen} />
+        <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

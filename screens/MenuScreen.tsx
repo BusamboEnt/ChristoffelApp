@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useCart } from '../context/CartContext';
+import { User, Receipt, ShoppingCart } from 'lucide-react-native';
 
 interface MenuItem {
   id: string;
@@ -32,7 +33,7 @@ const MenuScreen: React.FC = () => {
       id: '1', 
       label: 'Seared Scallops with Citrus-Shallot Salad', 
       description: 'Fresh sea scallops with vibrant citrus and shallots',
-      price: 28.50,
+      price: 485.00,
       image: require('../assets/dish1.png'),
       category: 'À la carte',
       dietary: ['Gluten-free', 'Dairy-free'],
@@ -42,7 +43,7 @@ const MenuScreen: React.FC = () => {
       id: '2', 
       label: 'Grilled Ribeye Steak', 
       description: 'Prime ribeye with herb butter and seasonal vegetables',
-      price: 42.00,
+      price: 725.00,
       image: require('../assets/dish1.png'),
       category: 'À la carte',
       dietary: ['Gluten-free'],
@@ -52,7 +53,7 @@ const MenuScreen: React.FC = () => {
       id: '3', 
       label: 'Wild Mushroom Risotto', 
       description: 'Creamy arborio rice with truffle oil and parmesan',
-      price: 24.00,
+      price: 395.00,
       image: require('../assets/dish1.png'),
       category: 'À la carte',
       dietary: ['Vegetarian'],
@@ -62,7 +63,7 @@ const MenuScreen: React.FC = () => {
       id: '4', 
       label: 'Pan-Seared Salmon', 
       description: 'Atlantic salmon with lemon beurre blanc',
-      price: 32.00,
+      price: 545.00,
       image: require('../assets/dish1.png'),
       category: 'À la carte',
       dietary: ['Gluten-free'],
@@ -80,7 +81,7 @@ const MenuScreen: React.FC = () => {
       <View style={styles.cardContent}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle} numberOfLines={2}>{item.label}</Text>
-          <Text style={styles.price}>${item.price.toFixed(2)}</Text>
+          <Text style={styles.price}>R{item.price.toFixed(2)}</Text>
         </View>
         <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
         <View style={styles.cardFooter}>
@@ -105,8 +106,22 @@ const MenuScreen: React.FC = () => {
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Christoffel</Text>
-          <Text style={styles.subtitle}>Fine Dining Experience</Text>
+          <TouchableOpacity 
+            style={styles.iconButton}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <User color="#FFF" size={28} strokeWidth={2} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Text style={styles.title}>Christoffel</Text>
+            <Text style={styles.subtitle}>Fine Dining Experience</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.iconButton}
+            onPress={() => navigation.navigate('OrderHistory')}
+          >
+            <Receipt color="#FFF" size={28} strokeWidth={2} />
+          </TouchableOpacity>
         </View>
 
         {/* Menu List */}
@@ -127,6 +142,7 @@ const MenuScreen: React.FC = () => {
             <View style={styles.cartBadge}>
               <Text style={styles.cartBadgeText}>{getTotalItems()}</Text>
             </View>
+            <ShoppingCart color="#000" size={20} strokeWidth={2} style={styles.cartIcon} />
             <Text style={styles.cartButtonText}>View Cart</Text>
           </TouchableOpacity>
         )}
@@ -145,10 +161,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#000' 
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#222',
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: { 
     color: '#FFF', 
@@ -268,6 +297,9 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  cartIcon: {
+    marginRight: 5,
   },
   cartButtonText: {
     color: '#000',

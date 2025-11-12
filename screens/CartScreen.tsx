@@ -7,47 +7,56 @@ import {
   Image,
   StyleSheet,
   SafeAreaView,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useCart } from '../context/CartContext';
+import CustomAlert from '../components/CustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 const CartScreen: React.FC = () => {
   const navigation = useNavigation();
   const { cart, removeFromCart, updateQuantity, getTotalPrice, clearCart } = useCart();
+  const { alertConfig, visible, showAlert, hideAlert } = useCustomAlert();
 
   const handleCheckout = () => {
     if (cart.length === 0) {
-      Alert.alert('Cart Empty', 'Please add items to your cart first');
+      showAlert({
+        title: 'Cart Empty',
+        message: 'Please add items to your cart first',
+        type: 'warning',
+        buttons: [{ text: 'OK', style: 'default' }]
+      });
       return;
     }
-    Alert.alert(
-      'Checkout',
-      'Proceed to table selection?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Continue', 
-          onPress: () => {
-            // Navigate to table selection or payment
-            Alert.alert('Success', 'Order placed successfully!');
-            clearCart();
-            navigation.navigate('Menu');
-          }
-        }
-      ]
-    );
+    navigation.navigate('TableSelection');
   };
 
   const handleRemoveItem = (dishId: string, dishName: string) => {
-    Alert.alert(
-      'Remove Item',
-      `Remove ${dishName} from cart?`,
-      [
+    showAlert({
+      title: 'Remove Item',
+      message: `Remove ${dishName} from cart?`,
+      type: 'warning',
+      buttons: [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Remove', style: 'destructive', onPress: () => removeFromCart(dishId) }
+        { 
+          text: 'Remove', 
+          style: 'destructive', 
+          onPress: () => removeFromCart(dishId) 
+        }
       ]
-    );
+    });
+  };
+
+  const handleClearCart = () => {
+    showAlert({
+      title: 'Clear Cart',
+      message: 'Remove all items from cart?',
+      type: 'warning',
+      buttons: [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Clear', style: 'destructive', onPress: clearCart }
+      ]
+    });
   };
 
   const renderCartItem = ({ item }: any) => (
@@ -55,7 +64,7 @@ const CartScreen: React.FC = () => {
       <Image source={item.image} style={styles.itemImage} />
       <View style={styles.itemDetails}>
         <Text style={styles.itemName} numberOfLines={2}>{item.label}</Text>
-        <Text style={styles.itemPrice}>${item.price.toFixed(2)} each</Text>
+        <Text style={styles.itemPrice}>R{item.price.toFixed(2)} each</Text>
         
         <View style={styles.quantityRow}>
           <View style={styles.quantityControls}>
@@ -73,7 +82,7 @@ const CartScreen: React.FC = () => {
               <Text style={styles.quantityButtonText}>+</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.itemTotal}>${(item.price * item.quantity).toFixed(2)}</Text>
+          <Text style={styles.itemTotal}>R{(item.price * item.quantity).toFixed(2)}</Text>
         </View>
       </View>
       
@@ -109,6 +118,16 @@ const CartScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
         </View>
+        {alertConfig && (
+          <CustomAlert
+            visible={visible}
+            title={alertConfig.title}
+            message={alertConfig.message}
+            buttons={alertConfig.buttons}
+            type={alertConfig.type}
+            onClose={hideAlert}
+          />
+        )}
       </SafeAreaView>
     );
   }
@@ -122,16 +141,7 @@ const CartScreen: React.FC = () => {
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Your Cart</Text>
-          <TouchableOpacity onPress={() => {
-            Alert.alert(
-              'Clear Cart',
-              'Remove all items from cart?',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Clear', style: 'destructive', onPress: clearCart }
-              ]
-            );
-          }}>
+          <TouchableOpacity onPress={handleClearCart}>
             <Text style={styles.clearText}>Clear</Text>
           </TouchableOpacity>
         </View>
@@ -149,16 +159,16 @@ const CartScreen: React.FC = () => {
         <View style={styles.summary}>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>${getTotalPrice().toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>R{getTotalPrice().toFixed(2)}</Text>
           </View>
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Tax (10%)</Text>
-            <Text style={styles.summaryValue}>${(getTotalPrice() * 0.1).toFixed(2)}</Text>
+            <Text style={styles.summaryLabel}>VAT (15%)</Text>
+            <Text style={styles.summaryValue}>R{(getTotalPrice() * 0.15).toFixed(2)}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.summaryRow}>
             <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>${(getTotalPrice() * 1.1).toFixed(2)}</Text>
+            <Text style={styles.totalValue}>R{(getTotalPrice() * 1.15).toFixed(2)}</Text>
           </View>
           
           <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
@@ -166,6 +176,17 @@ const CartScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      {alertConfig && (
+        <CustomAlert
+          visible={visible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          type={alertConfig.type}
+          onClose={hideAlert}
+        />
+      )}
     </SafeAreaView>
   );
 };

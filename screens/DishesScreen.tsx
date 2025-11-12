@@ -7,11 +7,12 @@ import {
   StyleSheet, 
   ScrollView,
   Dimensions,
-  SafeAreaView,
-  Alert
+  StatusBar,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useCart } from '../context/CartContext';
+import CustomAlert from '../components/CustomAlert';
+import { useCustomAlert } from '../hooks/useCustomAlert';
 
 interface Dish {
   id: string;
@@ -24,12 +25,13 @@ interface Dish {
   allergens?: string[];
 }
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const DishesScreen: React.FC = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { addToCart } = useCart();
+  const { alertConfig, visible, showAlert, hideAlert } = useCustomAlert();
   const [quantity, setQuantity] = useState(1);
   
   const { dish } = (route.params as { dish?: Dish }) || { 
@@ -37,7 +39,7 @@ const DishesScreen: React.FC = () => {
       id: '1',
       label: 'Seared Scallops with Citrus-Shallot Salad', 
       description: 'The most important thing you need to know about searing scallops is that they should be as dry as possible before they go in the pan. Fresh sea scallops paired with a vibrant citrus-shallot salad create an elegant and refreshing dish.',
-      price: 28.50,
+      price: 485.00,
       image: require('../assets/dish1.png'),
       category: 'À la carte',
       dietary: ['Gluten-free', 'Dairy-free'],
@@ -55,14 +57,19 @@ const DishesScreen: React.FC = () => {
 
   const handleAddToCart = () => {
     addToCart(dish, quantity);
-    Alert.alert(
-      'Added to Cart',
-      `${quantity} x ${dish.label} added to your order`,
-      [
+    showAlert({
+      title: 'Added to Cart',
+      message: `${quantity} x ${dish.label} added to your order`,
+      type: 'success',
+      buttons: [
         { text: 'Continue Shopping', style: 'cancel' },
-        { text: 'View Cart', onPress: () => navigation.navigate('Cart') }
+        { 
+          text: 'View Cart', 
+          onPress: () => navigation.navigate('Cart'),
+          style: 'default'
+        }
       ]
-    );
+    });
   };
 
   const getTotalPrice = () => {
@@ -70,24 +77,30 @@ const DishesScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Back Button */}
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-
-        {/* Dish Image */}
-        <View style={styles.imageContainer}>
-          <Image source={dish.image} style={styles.image} />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+      
+      <ScrollView 
+        style={styles.scrollView} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Hero Image with Back Button Overlay */}
+        <View style={styles.heroContainer}>
+          <Image source={dish.image} style={styles.heroImage} />
+          
+          {/* Back Button - Original Style */}
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Dish Content */}
-        <View style={styles.content}>
+        {/* Content Card */}
+        <View style={styles.contentCard}>
           {/* Title and Price */}
           <View style={styles.titleRow}>
             <Text style={styles.title}>{dish.label}</Text>
-            <Text style={styles.priceTag}>${dish.price.toFixed(2)}</Text>
+            <Text style={styles.priceTag}>R{dish.price.toFixed(2)}</Text>
           </View>
           
           {/* Category Badge */}
@@ -158,7 +171,7 @@ const DishesScreen: React.FC = () => {
           {/* Total Price Display */}
           <View style={styles.totalSection}>
             <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalPrice}>${getTotalPrice()}</Text>
+            <Text style={styles.totalPrice}>R{getTotalPrice()}</Text>
           </View>
 
           {/* Add to Cart Button */}
@@ -167,24 +180,47 @@ const DishesScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+
+      {/* Custom Alert */}
+      {alertConfig && (
+        <CustomAlert
+          visible={visible}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          buttons={alertConfig.buttons}
+          type={alertConfig.type}
+          onClose={hideAlert}
+        />
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
   container: {
     flex: 1,
     backgroundColor: '#000',
   },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  heroContainer: {
+    width: width,
+    height: height * 0.5,
+    position: 'relative',
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
   backButton: {
     position: 'absolute',
-    top: 20,
+    top: StatusBar.currentHeight ? StatusBar.currentHeight + 10 : 50,
     left: 20,
-    zIndex: 10,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     paddingHorizontal: 15,
     paddingVertical: 8,
@@ -195,19 +231,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  imageContainer: {
-    width: width,
-    height: 300,
-    backgroundColor: '#111',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  content: {
-    padding: 20,
-    paddingTop: 25,
+  contentCard: {
+    backgroundColor: '#000',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginTop: -30,
+    padding: 24,
+    paddingTop: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
   },
   titleRow: {
     flexDirection: 'row',
