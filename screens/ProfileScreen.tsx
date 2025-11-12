@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../context/UserContext';
@@ -26,8 +27,14 @@ import {
   Leaf,
   AlertTriangle,
   Receipt,
-  ChevronRight
+  ChevronRight,
+  ChevronDown
 } from 'lucide-react-native';
+
+interface Table {
+  number: number;
+  isAvailable: boolean;
+}
 
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -38,7 +45,8 @@ const ProfileScreen: React.FC = () => {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [phone, setPhone] = useState(user.phone);
-  const [favoriteTable, setFavoriteTable] = useState(user.favoriteTable?.toString() || '');
+  const [favoriteTable, setFavoriteTable] = useState<number | undefined>(user.favoriteTable);
+  const [showTableDropdown, setShowTableDropdown] = useState(false);
 
   const dietaryOptions = ['Vegetarian', 'Vegan', 'Gluten-free', 'Dairy-free', 'Halal', 'Kosher'];
   const allergyOptions = ['Nuts', 'Shellfish', 'Dairy', 'Gluten', 'Eggs', 'Soy', 'Fish'];
@@ -46,11 +54,32 @@ const ProfileScreen: React.FC = () => {
   const [selectedDietary, setSelectedDietary] = useState<string[]>(user.dietaryPreferences);
   const [selectedAllergies, setSelectedAllergies] = useState<string[]>(user.allergyInfo);
 
+  // Simple table availability data
+  const tables: Table[] = [
+    { number: 1, isAvailable: true },
+    { number: 2, isAvailable: true },
+    { number: 3, isAvailable: false },
+    { number: 4, isAvailable: true },
+    { number: 5, isAvailable: true },
+    { number: 6, isAvailable: true },
+    { number: 7, isAvailable: true },
+    { number: 8, isAvailable: false },
+    { number: 9, isAvailable: true },
+    { number: 10, isAvailable: true },
+  ];
+
   const toggleSelection = (item: string, list: string[], setList: (list: string[]) => void) => {
     if (list.includes(item)) {
       setList(list.filter((i) => i !== item));
     } else {
       setList([...list, item]);
+    }
+  };
+
+  const handleTableSelect = (table: Table) => {
+    if (table.isAvailable) {
+      setFavoriteTable(table.number);
+      setShowTableDropdown(false);
     }
   };
 
@@ -69,7 +98,7 @@ const ProfileScreen: React.FC = () => {
       name,
       email,
       phone,
-      favoriteTable: favoriteTable ? parseInt(favoriteTable) : undefined,
+      favoriteTable: favoriteTable,
       dietaryPreferences: selectedDietary,
       allergyInfo: selectedAllergies,
     });
@@ -166,17 +195,18 @@ const ProfileScreen: React.FC = () => {
               />
             </View>
 
-            <View style={styles.inputContainer}>
+            {/* Favorite Table Dropdown */}
+            <TouchableOpacity 
+              style={styles.inputContainer}
+              onPress={() => setShowTableDropdown(true)}
+              activeOpacity={0.7}
+            >
               <MapPin color="#AAA" size={20} strokeWidth={2} style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                value={favoriteTable}
-                onChangeText={setFavoriteTable}
-                placeholder="Favorite table number"
-                placeholderTextColor="#555"
-                keyboardType="numeric"
-              />
-            </View>
+              <Text style={[styles.dropdownText, !favoriteTable && styles.placeholderText]}>
+                {favoriteTable ? `Table ${favoriteTable}` : 'Select favorite table number'}
+              </Text>
+              <ChevronDown color="#AAA" size={20} strokeWidth={2} />
+            </TouchableOpacity>
           </View>
 
           {/* Dietary Preferences */}
@@ -259,6 +289,70 @@ const ProfileScreen: React.FC = () => {
           <View style={{ height: 40 }} />
         </ScrollView>
       </View>
+
+      {/* Table Selection Modal */}
+      <Modal
+        visible={showTableDropdown}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowTableDropdown(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Favorite Table Number</Text>
+              <TouchableOpacity onPress={() => setShowTableDropdown(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.tableList} showsVerticalScrollIndicator={false}>
+              {/* Clear Selection Option */}
+              <TouchableOpacity
+                style={[styles.tableOption, !favoriteTable && styles.tableOptionSelected]}
+                onPress={() => {
+                  setFavoriteTable(undefined);
+                  setShowTableDropdown(false);
+                }}
+              >
+                <Text style={styles.tableNumber}>None</Text>
+                {!favoriteTable && (
+                  <Check color="#4CAF50" size={24} strokeWidth={2.5} />
+                )}
+              </TouchableOpacity>
+
+              {tables.map((table) => (
+                <TouchableOpacity
+                  key={table.number}
+                  style={[
+                    styles.tableOption,
+                    !table.isAvailable && styles.tableOptionDisabled,
+                    favoriteTable === table.number && styles.tableOptionSelected,
+                  ]}
+                  onPress={() => handleTableSelect(table)}
+                  disabled={!table.isAvailable}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.tableNumberContainer}>
+                    <Text style={[
+                      styles.tableNumber,
+                      !table.isAvailable && styles.tableNumberDisabled
+                    ]}>
+                      Table {table.number}
+                    </Text>
+                    {!table.isAvailable && (
+                      <Text style={styles.unavailableLabel}>(Not Available)</Text>
+                    )}
+                  </View>
+                  {favoriteTable === table.number && table.isAvailable && (
+                    <Check color="#4CAF50" size={24} strokeWidth={2.5} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
 
       {alertConfig && (
         <CustomAlert
@@ -386,6 +480,15 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
   },
+  dropdownText: {
+    flex: 1,
+    padding: 12,
+    color: '#FFF',
+    fontSize: 16,
+  },
+  placeholderText: {
+    color: '#555',
+  },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -441,6 +544,77 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    justifyContent: 'flex-end',
+  },
+  modalContainer: {
+    backgroundColor: '#111',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '70%',
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#222',
+  },
+  modalTitle: {
+    color: '#FFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  modalClose: {
+    color: '#FFF',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  tableList: {
+    padding: 15,
+  },
+  tableOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#1a1a1a',
+    padding: 18,
+    borderRadius: 12,
+    marginBottom: 10,
+    borderWidth: 2,
+    borderColor: '#222',
+  },
+  tableOptionSelected: {
+    borderColor: '#4CAF50',
+    backgroundColor: '#1a3a1a',
+  },
+  tableOptionDisabled: {
+    opacity: 0.4,
+  },
+  tableNumberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  tableNumber: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  tableNumberDisabled: {
+    color: '#666',
+  },
+  unavailableLabel: {
+    color: '#FF4444',
+    fontSize: 14,
+    fontStyle: 'italic',
   },
 });
 
